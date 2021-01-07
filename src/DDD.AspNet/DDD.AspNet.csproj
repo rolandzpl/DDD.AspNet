@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <PackageReference Include="Lithium.DDD" Version="1.0.7" />
+    <PackageReference Include="Lithium.MessageBus" Version="1.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
   </ItemGroup>
