@@ -1,3 +1,5 @@
+using System;
+using System.Diagnostics;
 using DDD.Domain;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,9 +18,13 @@ namespace DDD
                 {
                     try
                     {
+                        Trace.WriteLine($"Publishing new event {_.GetType().Name} to message bus");
                         bus.Publish(_);
                     }
-                    catch { }
+                    catch (Exception ex)
+                    {
+                        Trace.WriteLine($"Error occured while publishing event: {ex}");
+                    }
                 }
             };
             return app;
@@ -28,15 +34,20 @@ namespace DDD
         {
             var eventStore = app.ApplicationServices.GetRequiredService<IEventStore>();
             var bus = app.ApplicationServices.GetRequiredService<IMessageBus>();
-            eventStore.GetAllEvents();
+            Trace.WriteLine($"Preparing to replay all events to message bus");
             foreach (var eventId in eventStore.GetAllEvents())
             {
                 try
                 {
-                    var e = eventStore.GetEventsById(eventId);
+                    Trace.WriteLine($"Replaying event {eventId}");
+                    var e = eventStore.GetEvent(eventId);
+                    Trace.WriteLine($"Publishing event of type {e.GetType().Name}");
                     bus.Publish(e);
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Trace.WriteLine($"Error occured while replying event: {ex}");
+                }
             }
             return app;
         }
